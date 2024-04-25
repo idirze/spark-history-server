@@ -1,0 +1,90 @@
+{{ template "chart.header" . }}
+
+{{ template "chart.description" . }}
+
+## Introduction
+
+This chart bootstraps a [Spark History Server]({{template "chart.homepage" . }}) deployment using the [Helm](https://helm.sh) package manager.
+
+## Prerequisites
+
+- Helm >= 3
+- Kubernetes >= 1.19
+
+
+## Installing the chart
+
+```shell
+
+$ git clone repoUrl (TODO: switch to helm add)
+
+$ helm install my-release .
+```
+
+This will create a release of `spark-history-server` in the default namespace. To install in a different one:
+
+```shell
+$ helm install history-server . -n spark
+```
+
+Note that `helm` will fail to install if the namespace doesn't exist. Either create the namespace beforehand or pass the `--create-namespace` flag to the `helm install` command.
+
+## Uninstalling the chart
+
+To uninstall `history-server`:
+
+```shell
+$ helm uninstall history-server -n spark
+```
+
+The command removes all the Kubernetes components associated with the chart and deletes the release.
+## Configuration examples
+
+### Using an S3-Compatible System for Log Storage
+
+This example guides you through setting up the Spark History Server to store logs in an S3-compatible storage system.
+
+#### Authentication using accessKey and secretKey
+
+##### 1. Create a Kubernetes Secret for S3 Credentials
+
+This secret will store the access key and secret key required to access your S3 bucket.
+
+    kubectl create secret generic s3-secret \
+      --from-literal=accessKey='XXXXX' \
+      --from-literal=secretKey='XXXXX' \
+      -n spark
+
+Replace your-access-key and your-secret-key with your actual S3 credentials.
+
+##### 2. Prepare Configuration Values (my-values.yaml):
+
+    config:
+      spark.hadoop.fs.s3a.endpoint: https://<S3 endpoint>
+      spark.hadoop.fs.s3a.connection.ssl.enabled: true
+      spark.history.fs.logDirectory: s3a://<your-bucket-name>/eventLogs
+      spark.hadoop.fs.s3a.impl: org.apache.hadoop.fs.s3a.S3AFileSystem
+      spark.hadoop.fs.s3a.path.style.access: true
+
+    extraEnvs:
+      - name: AWS_ACCESS_KEY_ID
+        valueFrom:
+          secretKeyRef:
+            key: accessKey
+            name: s3-secret
+      - name: AWS_SECRET_ACCESS_KEY
+        valueFrom:
+          secretKeyRef:
+            key: secretKey
+            name: s3-secret
+      # Disable Certificate Checking
+      - name: SPARK_HISTORY_OPTS
+        value: "-Dcom.amazonaws.sdk.disableCertChecking=true"
+
+##### 3. Deploy the Helm Chart
+
+    helm install history-server . --values my-values.yaml -n spark
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "chart.maintainersSection" . }}
