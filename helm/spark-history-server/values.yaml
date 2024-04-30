@@ -14,6 +14,9 @@ replicaCount: 1
 # Desired name of the Spark History Server deployment.
 deploymentName:
 
+# Desired log level (
+logLevel: info
+
 # Configuration for the Docker image to be used.
 image:
   repository: quay.io/okdp/spark  # Docker image repository.
