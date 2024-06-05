@@ -4,37 +4,48 @@
 
 ## Introduction
 
-This chart bootstraps a [Spark History Server]({{template "chart.homepage" . }}) deployment using the [Helm](https://helm.sh) package manager.
+This chart bootstraps a [Spark History Server](https://spark.apache.org/docs/latest/monitoring.html#viewing-after-the-fact) deployment using the [Helm](https://helm.sh) package manager.
+
+{{ template "chart.requirementsSection" . }}
 
 ## Prerequisites
 
 - Helm >= 3
 - Kubernetes >= 1.19
 
-
 ## Installing the chart
 
+To deploy the chart with a release name `my-release`:
+
+1. First, add the okdp helm charts repository:
+
 ```shell
-
-$ git clone repoUrl (TODO: switch to helm add)
-
-$ helm install my-release .
+$ helm repo add okdp https://okdp.github.io/charts
 ```
 
-This will create a release of `spark-history-server` in the default namespace. To install in a different one:
+2. Then, install the chart with the release name `my-release`:
 
 ```shell
-$ helm install history-server . -n spark
+$ helm install --version {{ template "chart.version" . }} \
+  my-release okdp/spark-history-server
+```
+
+This will create a release of `my-release` in the default namespace. To install in a different one:
+
+```shell
+$ helm install --version {{ template "chart.version" . }} \
+  --namespace spark \
+  my-release okdp/spark-history-server
 ```
 
 Note that `helm` will fail to install if the namespace doesn't exist. Either create the namespace beforehand or pass the `--create-namespace` flag to the `helm install` command.
 
-## Uninstalling the chart
+## Uninstalling the chart  `my-release`
 
-To uninstall `history-server`:
+To uninstall `my-release`:
 
 ```shell
-$ helm uninstall history-server -n spark
+$ helm uninstall my-release -n spark
 ```
 
 The command removes all the Kubernetes components associated with the chart and deletes the release.
@@ -50,41 +61,52 @@ This example guides you through setting up the Spark History Server to store log
 
 This secret will store the access key and secret key required to access your S3 bucket.
 
-    kubectl create secret generic s3-secret \
-      --from-literal=accessKey='XXXXX' \
-      --from-literal=secretKey='XXXXX' \
-      -n spark
+```shell
+kubectl create secret generic s3-secret \
+  --from-literal=accessKey='XXXXX' \
+  --from-literal=secretKey='XXXXX' \
+  -n spark
+```
 
 Replace your-access-key and your-secret-key with your actual S3 credentials.
 
 ##### 2. Prepare Configuration Values (my-values.yaml):
 
-    config:
-      spark.hadoop.fs.s3a.endpoint: https://<S3 endpoint>
-      spark.hadoop.fs.s3a.connection.ssl.enabled: true
-      spark.history.fs.logDirectory: s3a://<your-bucket-name>/eventLogs
-      spark.hadoop.fs.s3a.impl: org.apache.hadoop.fs.s3a.S3AFileSystem
-      spark.hadoop.fs.s3a.path.style.access: true
+```yaml
+config:
+  spark.hadoop.fs.s3a.endpoint: https://<S3 endpoint>
+  spark.hadoop.fs.s3a.connection.ssl.enabled: true
+  spark.history.fs.logDirectory: s3a://<your-bucket-name>/eventLogs
+  spark.hadoop.fs.s3a.impl: org.apache.hadoop.fs.s3a.S3AFileSystem
+  spark.hadoop.fs.s3a.path.style.access: true
 
-    extraEnvs:
-      - name: AWS_ACCESS_KEY_ID
-        valueFrom:
-          secretKeyRef:
-            key: accessKey
-            name: s3-secret
-      - name: AWS_SECRET_ACCESS_KEY
-        valueFrom:
-          secretKeyRef:
-            key: secretKey
-            name: s3-secret
-      # Disable Certificate Checking
-      - name: SPARK_HISTORY_OPTS
-        value: "-Dcom.amazonaws.sdk.disableCertChecking=true"
+extraEnvs:
+  - name: AWS_ACCESS_KEY_ID
+    valueFrom:
+      secretKeyRef:
+        key: accessKey
+        name: s3-secret
+  - name: AWS_SECRET_ACCESS_KEY
+    valueFrom:
+      secretKeyRef:
+        key: secretKey
+        name: s3-secret
+  # Disable Certificate Checking
+  - name: SPARK_HISTORY_OPTS
+    value: "-Dcom.amazonaws.sdk.disableCertChecking=true"
+```
 
 ##### 3. Deploy the Helm Chart
 
-    helm install history-server . --values my-values.yaml -n spark
+```shell
+helm repo add okdp https://okdp.github.io/charts
+helm install --version {{ template "chart.version" . }} \
+  --namespace spark \
+  --values my-values.yaml \
+  my-release okdp/spark-history-server
+```
+
 
 {{ template "chart.valuesSection" . }}
 
-{{ template "chart.maintainersSection" . }}
+{{ template "chart.sourcesSection" . }}

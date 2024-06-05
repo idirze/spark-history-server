@@ -7,7 +7,13 @@ keywords:
   - spark
   - spark-history
   - spark-history-server
-home: https://github.com/OKDP/
+home: https://spark.apache.org
 maintainers:
-  - name: Moncef LAHOUAR
-    email: moncef.lahouar@kubotal.io
+  - email: moncef.lahouar@kubotal.io
+    name: mlahouar
+    url: https://github.com/mlahouar
+sources:
+  - https://github.com/apache/spark
+  - https://github.com/OKDP/okdp-spark-auth-filter
+  - https://github.com/OKDP/spark-images
+  - https://github.com/okdp/charts/tree/main/charts/spark-history-server
