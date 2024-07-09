@@ -1,0 +1,26 @@
+{
+  "packages": {
+    "superset": {
+      "changelog-path": "CHANGELOG.md",
+      "release-type": "helm",
+      "changelog-type": "default",
+      "bump-minor-pre-major": false,
+      "bump-patch-for-minor-pre-major": false,
+      "draft": false,
+      "prerelease": true,
+      "initial-version": "0.12.10-rc.111"
+    },
+    "spark-history-server": {
+      "changelog-path": "CHANGELOG.md",
+      "release-type": "helm",
+      "changelog-type": "default",
+      "bump-minor-pre-major": false,
+      "bump-patch-for-minor-pre-major": false,
+      "draft": false,
+      "prerelease": false,
+      "initial-version": "1.0.0"
+    }
+  },
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json"
+}
+
