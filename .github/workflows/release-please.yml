@@ -40,4 +40,5 @@ defaults:
 jobs:
   release-please:
     uses: idirze/workflows/.github/workflows/helm-release-please.yml@main
+    secrets: inherit
                 
