@@ -13,27 +13,17 @@ This chart bootstraps a [Spark History Server](https://spark.apache.org/docs/lat
 
 ## Installing the chart
 
-To deploy the chart with a release name `my-release`:
-
-1. First, add the okdp helm charts repository:
+To install the chart with the release name `my-release`:
 
 ```shell
-$ helm repo add okdp https://okdp.github.io/charts
+$ helm install my-release oci://quay.io/okdp/charts/spark-history-server --version 1.0.0
 ```
 
-2. Then, install the chart with the release name `my-release`:
+This will create a release of `my-release` in the default namespace. To install in a different namespace:
 
 ```shell
-$ helm install --version 1.0.0 \
-  my-release okdp/spark-history-server
-```
-
-This will create a release of `my-release` in the default namespace. To install in a different one:
-
-```shell
-$ helm install --version 1.0.0 \
-  --namespace spark \
-  my-release okdp/spark-history-server
+$ helm install my-release oci://quay.io/okdp/charts/spark-history-server --version 1.0.0 \
+       --namespace spark
 ```
 
 Note that `helm` will fail to install if the namespace doesn't exist. Either create the namespace beforehand or pass the `--create-namespace` flag to the `helm install` command.
@@ -47,6 +37,15 @@ $ helm uninstall my-release -n spark
 ```
 
 The command removes all the Kubernetes components associated with the chart and deletes the release.
+
+## Downloading the chart locally
+
+To download the chart locally, use the following command:
+
+```shell
+$ helm pull oci://quay.io/okdp/charts/spark-history-server --version 1.0.0
+```
+
 ## Configuration examples
 
 ### Using an S3-Compatible System for Log Storage
@@ -97,11 +96,9 @@ extraEnvs:
 ##### 3. Deploy the Helm Chart
 
 ```shell
-helm repo add okdp https://okdp.github.io/charts
-helm install --version 1.0.0 \
-  --namespace spark \
-  --values my-values.yaml \
-  my-release okdp/spark-history-server
+helm install my-release oci://quay.io/okdp/charts/spark-history-server --version 1.0.0 \
+      --namespace spark \
+      --values my-values.yaml \
 ```
 
 ## Values
